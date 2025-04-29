@@ -26,11 +26,9 @@ if current_arch is None:
 for arg in sys.argv[1:]:
     # Create a temporary directory for each file to avoid interference
     temp_dir = tempfile.mkdtemp()
-    print(f"Temporary directory: {temp_dir}")
 
     try:
         file_path = os.path.abspath(arg)
-        print(f"Processing: {file_path}")
 
         # Check if the file exists
         if not os.path.exists(file_path):
@@ -45,7 +43,6 @@ for arg in sys.argv[1:]:
         try:
             with open(output_path, 'wb') as out_file:
                 subprocess.run(['gunzip', '-c', file_path], check=True, stdout=out_file)
-            print(f"Decompressed to: {output_path}")
         except subprocess.CalledProcessError as e:
             print(f"Failed to decompress {file_path}: {e}")
             continue
@@ -53,7 +50,6 @@ for arg in sys.argv[1:]:
         # Extract the archive using ar
         try:
             subprocess.run(['ar', 'x', output_path], cwd=temp_dir, check=True)
-            print(f"Extracted archive contents in {temp_dir}")
         except subprocess.CalledProcessError as e:
             print(f"Failed to extract archive {output_path}: {e}")
             continue
@@ -68,12 +64,9 @@ for arg in sys.argv[1:]:
             shutil.copy(source_file, target_file)
             # Make the file executable
             os.chmod(target_file, os.stat(target_file).st_mode | stat.S_IEXEC)
-            print(f"Copied and made executable: {current_arch} to {target_file}")
         else:
             print(f"Error: {current_arch} file not found in {temp_dir}")
 
     finally:
         # Clean up the temporary directory
         shutil.rmtree(temp_dir)
-
-print("Extraction process completed.")
